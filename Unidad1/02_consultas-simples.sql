@@ -42,8 +42,19 @@ select * from Employees;
 
 select OrderDate as 'Fecha de orden', year(OrderDate) as Año, month(OrderDate) as Mes, day(OrderDate) as Dia, CustomerID, EmployeeID from Orders;
 
+select * from Customers;
+
+-- filas duplicadas
+
+-- Mostrar los paises en donde se tienen clientes,
+-- mostrando los paises solamente
+
+select distinct Country
+from Customers order by Country
+
+
 -- Clausula where
--- Operadores relacionales(<,>,=,<=,>=,!= o <>)
+-- Operadores relacionales o test de comparacion(<,>,=,<=,>=,!= o <>)
 
 select * from Customers;
 
@@ -79,3 +90,33 @@ where UnitPrice > 100
 select OrderDate, RequiredDate, ShippedDate, CustomerID
 from Orders
 where year(OrderDate) = '1996' 
+
+-- Mostrar todas las ordenes de compra donde la cantidad de productos comprados sea mayor a 5
+
+select * from [Order Details]
+select * from Orders;
+
+select Quantity as cantidad
+from [Order Details]
+where Quantity > 5
+
+-- Mostrar el nombre completo del empleado, su numero de empleado, fecha de nacimiento
+-- la ciudad y fecha de contratacion debe ser de aquellos que fueron contratados despues de 1993
+-- los resultados en sus encabezados deben ser mostrados en español
+
+select (FirstName + '   ' + LastName) as 'Nombre Completo', EmployeeID as 'Numero de empleado', 
+BirthDate as 'Fecha De Nacimiento', City as Ciudad, HireDate as 'Fecha de Contratacion'
+from Employees
+where year(HireDate) > 1993
+
+--Mostrar los empleados que no son dirigidos por el jefe 2
+
+select (FirstName + '   ' + LastName) as 'Nombre Completo', EmployeeID as 'Numero de empleado', 
+BirthDate as 'Fecha De Nacimiento', City as Ciudad, HireDate as 'Fecha de Contratacion', ReportsTo as 'Jefe'
+from Employees
+where ReportsTo <> 2
+
+-- seleccionar los empleados que no tengan jefe
+
+select * from Employees
+where ReportsTo is null

@@ -192,34 +192,3 @@ select * from Orders
 where Freight >=100
 and (ShipCountry = 'Brazil' or ShipCountry = 'Argentina')
 and not ShipVia = 1
-
--- seleccionar empleqdos que no viven en londres o seattle y que fueron contratados despues de 1992
-
-select concat(FirstName , ' ', LastName) as [Nombre Completo], HireDate, city, Country
-from Employees
-where NOT(City = 'London' or City = 'Seattle')
-and year(HireDate) >= 1992
-
--- Clausula In (or)
--- seleccionar los productos con categoria 1,3 o 5
-
-select ProductName, CategoryID, UnitPrice from Products
-where CategoryID = 1 or CategoryID = 3 or CategoryID = 5
-
-select * from Orders
-
--- seleccionar todas las ordenes de la region RJ, Tachira y que no tegan region asignada.
-
-select OrderID, ShipRegion
-from Orders
-where ShipRegion IN ('RJ','Táchira') or ShipRegion is null
-
--- seleccionar las ordenes que tengan cantidades de 12, 9, o 40 
--- y descuento de 0.15 o 0.05
-
-select *
-from [Order Details]
-where Quantity IN (12,9,40)
-and Discount IN (0.15, 0.05)
-
--- Clausula Between

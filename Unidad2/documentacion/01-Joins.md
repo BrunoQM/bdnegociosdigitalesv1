@@ -1,3 +1,9 @@
+# Inner joins
+
+![Inner Join](/Unidad1/img/img_inner_join.png)
+
+
+
 -- consultas de agregado
 -- Nota: Solo devuelven un solo registro
 -- sum, avg, count, count(*), max y min

@@ -472,6 +472,11 @@ having sum(od.Quantity * od.UnitPrice) between '500' and '2000'
 
 -- left join, right join, full join y cross join
 
+-- practica de utilizacion de left join
+
+-- seleccionar los datos que se van a utilizar para insertar en la tabla products_new
+
+-- product_id, product_Name, customer, category, unitprice, discontinued, inserted_date
 
 
 

@@ -89,10 +89,9 @@
  sum(Importe) as 'Importe total'
  from vistaordenescompra
  where year([Fecha de orden]) between '1995' and '1996'
- group by [Cliente]
- having count(*)>2
+ group by [Cliente]  -- Muestra el número total de pedidos por cliente.
+ having count(*)>2  -- Muestra solo los clientes que tienen más de 2 pedidos.
  go
-
 
  -- crear codigo rh
  create schema rh

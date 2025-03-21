@@ -7,75 +7,81 @@
  -- insertar el pedido y calcular el importe(Multiplicando el precio del producto por cantidad vendida)
  -- Actualizar el stock del producto(Restando el stock menos la cantidad vendida)
 
- create or alter proc spu_realizar_pedido
- @numPedido int,
- @cliente int,
- @representante int,
- @fab char(3),
- @producto char(5),
- @cantidad int
- AS
- begin
-	if exists (select 1 from Pedidos where Num_Pedido=@numPedido) 
-	begin
-		print 'El pedido existe!'
-		return
-	end
+ -- Procedimiento almacenado para realizar un pedido
+CREATE OR ALTER PROC spu_realizar_pedido
+@numPedido INT, -- Número del pedido
+@cliente INT, -- ID del cliente
+@representante INT, -- ID del representante de ventas
+@fab CHAR(3), -- Código del fabricante
+@producto CHAR(5), -- Código del producto
+@cantidad INT -- Cantidad del producto a vender
+AS
+BEGIN
+    -- Validar si el pedido ya existe
+    IF EXISTS (SELECT 1 FROM Pedidos WHERE Num_Pedido = @numPedido) 
+    BEGIN
+        PRINT 'El pedido existe!'
+        RETURN
+    END
 
-	if not exists (select 1 from Clientes where Num_Cli = @cliente) or
-	   not exists (select 1 from Representantes where Num_Empl = @representante) or
-	   not exists (select 1 from Productos where Id_fab = @fab and Id_producto = @producto)
-	begin
-		print 'El Cliente/Empleado o Producto no existe'
-		return 
-	end
+    -- Validar que el cliente, representante y producto existan
+    IF NOT EXISTS (SELECT 1 FROM Clientes WHERE Num_Cli = @cliente) OR
+       NOT EXISTS (SELECT 1 FROM Representantes WHERE Num_Empl = @representante) OR
+       NOT EXISTS (SELECT 1 FROM Productos WHERE Id_fab = @fab AND Id_producto = @producto)
+    BEGIN
+        PRINT 'El Cliente/Empleado o Producto no existe'
+        RETURN 
+    END
 
-	if @cantidad <= 0
-	begin
-		print 'La cantidad no puede ser 0 o negativo'
-		return;
-	end
+    -- Validar que la cantidad sea mayor a 0
+    IF @cantidad <= 0
+    BEGIN
+        PRINT 'La cantidad no puede ser 0 o negativa'
+        RETURN;
+    END
 
-	declare @stockValido int
-	select @stockValido = Stock from Productos where Id_fab = @fab and Id_producto = @producto
+    -- Obtener el stock disponible del producto
+    DECLARE @stockValido INT
+    SELECT @stockValido = Stock FROM Productos WHERE Id_fab = @fab AND Id_producto = @producto
 
-	if @cantidad > @stockValido
-	begin
-		print 'No hay suficiente stock'
-		return;
-	end
+    -- Verificar si hay suficiente stock
+    IF @cantidad > @stockValido
+    BEGIN
+        PRINT 'No hay suficiente stock'
+        RETURN;
+    END
 
-	declare @precio money
-	declare @importe money
+    -- Declarar variables para precio e importe total
+    DECLARE @precio MONEY
+    DECLARE @importe MONEY
 
-	select @precio=Precio from Productos where Id_fab = @fab and Id_producto =@producto
-	set @importe = @cantidad * @precio
+    -- Obtener el precio del producto
+    SELECT @precio = Precio FROM Productos WHERE Id_fab = @fab AND Id_producto = @producto
+    SET @importe = @cantidad * @precio -- Calcular el importe total
 
+    BEGIN TRY 
+        -- Insertar el pedido en la tabla Pedidos
+        INSERT INTO Pedidos
+        VALUES(@numPedido, GETDATE(), @cliente, @representante, @fab, @producto, @cantidad, @importe);
+    
+        -- Actualizar el stock del producto restando la cantidad vendida
+        UPDATE Productos
+        SET Stock = Stock - @cantidad
+        WHERE Id_fab = @fab AND Id_producto = @producto;
+    END TRY
+    BEGIN CATCH
+        PRINT 'Error al actualizar datos'
+        RETURN;
+    END CATCH
 
-	begin try 
+END;
 
-	-- se inserto un pedido
-	insert into Pedidos
-	values(@numPedido, GETDATE(), @cliente, @representante, @fab, @producto, @cantidad, @importe);
-	
-	update Productos
-	set Stock = Stock - @cantidad
-	where Id_fab = @fab and Id_producto = @producto;
-	end try
-	begin catch
-		print 'Error al actualizar datos'
-	return;
-	end catch
+GO
 
- end;
+-- Ejecución del procedimiento almacenado con diferentes parámetros
+EXEC spu_realizar_pedido @numPedido = 113070, @cliente = 2000, @representante=106, @fab = 'REI', @producto='2A44L', @cantidad = 20
+EXEC spu_realizar_pedido @numPedido = 113070, @cliente = 2117, @representante=111, @fab = 'REI', @producto='2A44L', @cantidad = 20
+EXEC spu_realizar_pedido @numPedido = 113070, @cliente = 2117, @representante=101, @fab = 'ACI', @producto='4100X', @cantidad = 20
 
- GO
-
- exec spu_realizar_pedido @numPedido = 113070, @cliente = 2000, @representante=106, @fab = 'REI', @producto='2A44L', @cantidad =20
-
- exec spu_realizar_pedido @numPedido = 113070, @cliente = 2117, @representante=111, @fab = 'REI', @producto='2A44L', @cantidad =20
-
-  exec spu_realizar_pedido @numPedido = 113070, @cliente = 2117, @representante=101, @fab = 'ACI', @producto='4100X', @cantidad =20
-
-  select * from Productos
-  where Id_fab = 'ACI' and Id_producto = '4100X'
+-- Consultar los productos para verificar stock actualizado
+SELECT * FROM Productos WHERE Id_fab = 'ACI' AND Id_producto = '4100X'

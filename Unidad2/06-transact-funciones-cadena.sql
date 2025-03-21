@@ -65,7 +65,3 @@ left(CompanyName, 4) as Inicio,
 right(CompanyName, 6) as Final,
 substring(CompanyName,7,4) as Extraccion
 from Customers
-
-
-
-

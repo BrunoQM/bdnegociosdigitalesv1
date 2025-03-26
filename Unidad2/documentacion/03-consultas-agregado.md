@@ -1,3 +1,6 @@
+# Consultas de agregado
+
+ ``` sql
 -- consultas de agregado
 -- Nota: Solo devuelven un solo registro
 -- sum, avg, count, count(*), max y min
@@ -109,7 +112,6 @@ where CategoryID in (2,4,8)
 group by CategoryID
 order by CategoryID
 
-
 -- paso 4
 
 select CategoryID, sum(UnitsInStock)
@@ -121,17 +123,3 @@ order by CategoryID
 
 -- Listar las ordenes agrupadas por empleado, pero que solo muestre aquellos
 -- que hayan gestionado mas de 10 pedidos
-
-
-
-
-
-
-
-
-
-
-
-
-
-
